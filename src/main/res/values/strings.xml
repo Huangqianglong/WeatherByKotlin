@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">WheatherRepo</string>
+    <string name="tab_today">今日</string>
+    <string name="tab_moreday">未来几天</string>
+    <string name="temp_high">最高温:</string>
+    <string name="temp_low">最低温:</string>
+    <string name="temp_wind_fx">风向:</string>
+    <string name="temp_wind_fl">风力:</string>
+    <string name="type_qing">晴</string>
+    <string name="type_yu">雨</string>
+    <string name="type_yin">多云</string>
+    <string name="aqi_pm25">PM2.5:</string>
+    <string name="aqi_title">空气质量:</string>
+    <string name="shidu_title">湿度:</string>
+</resources>
