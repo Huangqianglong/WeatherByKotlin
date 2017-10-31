@@ -16,7 +16,7 @@ class MyUtil{
             while (matcher.find()){
                 sb.append(msg.substring(matcher.start(),matcher.end()))
             }
-            MyLog.d(this,"---wwww------------"+sb.toString().toFloat())
+           // MyLog.d(this,"---wwww------------"+sb.toString().toFloat())
             return sb.toString().toFloat()
         }
     }

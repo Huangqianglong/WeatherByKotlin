@@ -15,7 +15,7 @@
     android:id="@+id/imag_add_address"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@mipmap/a9p"
+    android:src="@mipmap/a7x"
     />
     <TextView
         android:id="@+id/tv_address"

@@ -9,6 +9,12 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.baidu.location.BDAbstractLocationListener
+import com.baidu.location.BDLocation
+import com.baidu.location.LocationClientOption
+import com.hql.wheather.activity.WheatherApplication
+import com.hql.wheather.baidu.services.LocationService
+import com.hql.wheather.beans.ActionBean
 import com.hql.wheather.beans.WheatherBean
 import com.hql.wheather.utils.MyLog
 import org.greenrobot.eventbus.EventBus
@@ -22,10 +28,11 @@ import java.util.regex.Pattern
  */
 class WheatherService : Service() {
     val WHEATHER_INTERFACE: String = "http://www.sojson.com/open/api/weather/json.shtml?city="
-    var mSearchCity = "深圳"
+    var mSearchCity = "北京"
     lateinit var mRequestQueue: RequestQueue
     val myBinder: WheatherServiceBinder = WheatherServiceBinder()
      var mDataCallBack: DataCallBack? = null
+    lateinit var mBaiduService : LocationService
     inner class WheatherServiceBinder : Binder() {
         fun getWheatherService(): WheatherService {
             return this@WheatherService
@@ -39,7 +46,7 @@ class WheatherService : Service() {
     override fun onCreate() {
         super.onCreate()
         MyLog.d(this, "onCreate");
-      //  initEventBus()
+        initEventBus()
         initVolley()
     }
 
@@ -49,7 +56,7 @@ class WheatherService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-       // EventBus.getDefault().unregister(this)
+        EventBus.getDefault().unregister(this)
     }
     fun test() {
         MyLog.d(this, "WheatherService   ============================test")
@@ -80,7 +87,14 @@ class WheatherService : Service() {
     fun handleWheatherData(data :Any ){
         var wb :WheatherBean = WheatherBean()
 
+
         var jsonAll = JSONObject(data.toString())
+        var status = jsonAll.getString("message")
+        if(!status.equals("Success !")){
+            MyLog.d(this," erro!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+status)
+            ToastMessge(" erro!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+status)
+            return
+        }
         MyLog.d(this," wb.shidu================"+ jsonAll.toString())
         wb.city = jsonAll.getString("city")
         var jsonData = jsonAll.getJSONObject("data")
@@ -173,7 +187,41 @@ class WheatherService : Service() {
        while (matcher.find()){
            sb.append(msg.substring(matcher.start(),matcher.end()))
        }
-       MyLog.d(this,"---wwww------------"+sb.toString().toFloat())
+      // MyLog.d(this,"---wwww------------"+sb.toString().toFloat())
        return sb.toString().toFloat()
    }
+    fun getLocation(){
+        MyLog.d(this,"============mLocation getLocation")
+        startLocation()
+    }
+    fun startLocation(){
+        MyLog.d(this,"============mLocation startLocation")
+        mBaiduService = (application as WheatherApplication).mLocationServices
+        mBaiduService.registerListener(mLocationListener)
+        mBaiduService.setLocationOption(mBaiduService.defaultLocationClientOption)
+        mBaiduService.start()
+    }
+    fun stopLocation(){
+        MyLog.d(this,"============mLocation stopLocation")
+        mBaiduService.unregisterListener(mLocationListener)
+        mBaiduService.stop()
+    }
+    val mLocationListener :BDAbstractLocationListener = object :BDAbstractLocationListener(){
+        override fun onReceiveLocation(p0: BDLocation?) {
+            MyLog.d(this,"============mLocation onReceiveLocation:"+p0!!.city.toString())
+           mSearchCity = p0!!.city.toString()
+            updateWheather()
+            MyLog.d(this,"============mLocation updateWheather")
+            stopLocation()
+            MyLog.d(this,"============mLocation onReceiveLocation  end")
+        }
+    }
+    @Subscribe
+    public fun onEventMainThread(bean:ActionBean){
+        MyLog.d(this,"============mLocation onEventMainThread:"+bean.action)
+
+        when(bean.action){
+            0->getLocation()
+        }
+    }
 }

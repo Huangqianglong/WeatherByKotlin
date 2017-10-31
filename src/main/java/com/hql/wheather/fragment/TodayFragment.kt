@@ -1,24 +1,32 @@
 package com.hql.wheather.fragment
 
+import android.app.ActionBar
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
 import com.hql.wheather.R
+import com.hql.wheather.beans.ActionBean
 import com.hql.wheather.beans.WheatherBean
 import com.hql.wheather.services.WheatherService
 import com.hql.wheather.utils.MyLog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import android.view.animation.AnimationUtils.loadAnimation
+import android.view.animation.LinearInterpolator
+
 
 /**
  * Created by HuangQiangLong on 2017/10/11 0011.
  */
 class TodayFragment : BaseFragment() ,WheatherService.DataCallBack{
 lateinit var mLocation :TextView
+    lateinit var mFreash:ImageView
     lateinit var mAddress :TextView
     lateinit var mType :TextView
     lateinit var mTtempHigh :TextView
@@ -63,6 +71,17 @@ lateinit var mLocation :TextView
         mTem10 = view.findViewById(R.id.iv_tem_10)
         mTem1 = view.findViewById(R.id.iv_tem_1)
         mTypePic = view.findViewById(R.id.iv_type_pic)
+        mLocation = view.findViewById(R.id.tv_address)
+        mFreash = view.findViewById(R.id.imag_add_address)
+
+        mFreash.setOnClickListener{
+            MyLog.d(this,"============mLocation click")
+            var bean:ActionBean = ActionBean()
+            bean.action = 0
+           EventBus.getDefault().post(bean)
+            startAnimation()
+        }
+
     }
     override fun getWheatherInfoCallBack(bean:WheatherBean) {
         MyLog.d(this,"getWheatherInfoCallBack==="+bean.toString())
@@ -139,7 +158,21 @@ lateinit var mLocation :TextView
             getString(R.string.type_yin)-> mTypePic.setImageResource(R.mipmap.type_yin)
         }
    //
-
+ stopAnimation()
     }
-
+    var isAnimation :Boolean = false
+    lateinit var operatingAnim : Animation
+    fun startAnimation(){
+         operatingAnim = AnimationUtils.loadAnimation(mContext,R.anim.rote)
+        val lin = LinearInterpolator()
+        operatingAnim.setInterpolator(lin)
+        mFreash.startAnimation(operatingAnim)
+        isAnimation =true
+    }
+    fun stopAnimation(){
+        if(isAnimation){
+            mFreash.clearAnimation()
+            isAnimation = false
+        }
+    }
 }

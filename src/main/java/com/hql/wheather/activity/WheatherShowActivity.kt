@@ -62,10 +62,10 @@ class WheatherShowActivity : BaseActivity() {
 
     }
     fun initView(){
-        mTabTitle = findViewById(R.id.tab_title)as TabLayout;
-        mFragmentContainer = findViewById(getFragmentContainerViewId()) as LinearLayout
-        mViewPage = findViewById(R.id.cotainer_viewpage) as ViewPager
-        mActivityBackGound = findViewById(R.id.main_back) as LinearLayout
+        mTabTitle = findViewById(R.id.tab_title)
+        mFragmentContainer = findViewById(getFragmentContainerViewId())
+        mViewPage = findViewById(R.id.cotainer_viewpage)
+        mActivityBackGound = findViewById(R.id.main_back)
         mTabTitle.setTabTextColors(Color.WHITE,Color.WHITE)
     }
     fun initData(){
@@ -151,7 +151,7 @@ class WheatherShowActivity : BaseActivity() {
             //透明导航栏
             window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
             //
-            val linear_bar = findViewById(R.id.ll) as LinearLayout
+            val linear_bar = findViewById<LinearLayout>(R.id.ll)
             linear_bar.visibility = View.VISIBLE
             //获取到状态栏的高度
             val statusHeight = getStatusBarHeight()
