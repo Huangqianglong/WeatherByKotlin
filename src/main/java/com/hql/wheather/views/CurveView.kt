@@ -259,7 +259,7 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
             y =   yOri - dd!!.get(DataX.get(index))!! /(DataY.get(DataY.size-1).toFloat())*(0.9f*yOri)
             path.lineTo(x,y)
             canvas?.drawPoint(x,y,mPointPaint)
-            canvas?.drawText(dd!!.get(DataX.get(index)).toString(),x,y+25,mTextPaint)
+            canvas?.drawText(dd!!.get(DataX.get(index)).toString(),x,y+35,mTextPaint)
         }
         canvas?.drawPath(path,mPaint)
         }

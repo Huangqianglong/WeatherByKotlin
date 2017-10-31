@@ -22,7 +22,7 @@ abstract  class BaseFragment:Fragment() {
     abstract fun getLayoutID():Int
     abstract fun initView(view:View,savedInstanceState: Bundle?)
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         var view :View = inflater!!.inflate(getLayoutID(),container,false)
         initView(view,savedInstanceState)
