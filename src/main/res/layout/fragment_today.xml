@@ -46,7 +46,7 @@
     android:id="@+id/iv_tem"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@mipmap/ui"
+    android:src="@mipmap/uj"
     />
         <ImageView
             android:paddingTop="5dp"
