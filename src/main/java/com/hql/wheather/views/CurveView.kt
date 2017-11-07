@@ -53,7 +53,10 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
      * x轴数据间距
      * */
     var interval = 90
-
+    /**
+     * 最小x轴数据间距
+     * */
+    var minInterval = 90
     /**
      * x轴第一个数据的x坐标
      * */
@@ -103,7 +106,7 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
             var xTextHeigh = getTextBounds("0000", mTextPaint).height()
 
 
-            yOri = height * 1f - 2/*view的下边距*/ - yTextHeigh/*x轴文本高度*/ - xylinewidth / 2/*轴线宽度的中点*/ - 2/*x轴文字和轴的编剧*/
+            yOri = height * 1f - 4/*view的下边距*/ - yTextHeigh/*x轴文本高度*/ - xylinewidth / 2/*轴线宽度的中点*/ - 4/*x轴文字和轴的编剧*/
 
 
             xOri = 2/*view的边距*/ + yTextWidth/*y轴数据宽度*/ + 2/*y轴数与y轴间距*/ + xylinewidth / 2 * 1f
@@ -115,7 +118,7 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
 
             if(0!= DataX.size){
 
-                interval =interval + getTextBounds(DataX.get(0), mTextPaint).width()
+                interval = minInterval + getTextBounds(DataX.get(0), mTextPaint).width()
             }
 
         }
@@ -160,9 +163,10 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
         this.DataX = xDtata
         DataMap = data
         this.Data = data.get("temdata1")!!
-        interval =interval + getTextBounds(DataX.get(0), mTextPaint).width()
+        interval = minInterval + getTextBounds(DataX.get(0), mTextPaint).width()
         miniX = width - interval * (DataX.size - 1) - (width - xOri) * 0.1f
         maxX = initX
+
         invalidate()
     }
     /**
@@ -235,7 +239,7 @@ class CurveView(context: Context, attr: AttributeSet) : View(context, attr) {
                // var rect:Rect = getTextBounds(Data.get(DataX.get(index)).toString(),mTextPaint)
                 var rect:Rect = getTextBounds(DataX.get(index).toString(),mTextPaint)
                 //画刻度
-                canvas?.drawText(DataX.get(index).toString(),x-rect.width()/2,yOri+rect.height()+2,mTextPaint)
+                canvas?.drawText(DataX.get(index).toString(),x-rect.width()/2,yOri+rect.height()-2,mTextPaint)
             }
         }
     }

@@ -1,9 +1,14 @@
 package com.hql.wheather.services
 
+import android.app.Activity
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.widget.Toast
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -20,6 +25,7 @@ import com.hql.wheather.utils.MyLog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.json.JSONObject
+import java.util.jar.Manifest
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -27,6 +33,8 @@ import java.util.regex.Pattern
  * Created by HuangQiangLong on 2017/10/17 0017.
  */
 class WheatherService : Service() {
+    final var STOP_FLASH :Int = 1
+    lateinit var mContext:Context
     val WHEATHER_INTERFACE: String = "http://www.sojson.com/open/api/weather/json.shtml?city="
     var mSearchCity = "北京"
     lateinit var mRequestQueue: RequestQueue
@@ -46,6 +54,7 @@ class WheatherService : Service() {
     override fun onCreate() {
         super.onCreate()
         MyLog.d(this, "onCreate");
+        mContext = this
         initEventBus()
         initVolley()
     }
@@ -77,12 +86,17 @@ class WheatherService : Service() {
                 },
                 Response.ErrorListener { error ->
                     MyLog.d(this, error.toString())
+                    handleErroAction(STOP_FLASH)
                 }
         )
         mRequestQueue.add(request)
 
     }
-
+    fun handleErroAction(actionSize : Int){
+        var action:ActionBean = ActionBean()
+        action.action=actionSize
+        EventBus.getDefault().post(action)
+    }
 
     fun handleWheatherData(data :Any ){
         var wb :WheatherBean = WheatherBean()
@@ -100,6 +114,7 @@ class WheatherService : Service() {
         var jsonData = jsonAll.getJSONObject("data")
         if(!jsonAll.getString("message").equals("Success !")){
             ToastMessge("get data fail")
+           handleErroAction(STOP_FLASH)
             return
         }
        // ToastMessge("get data fail")
@@ -192,10 +207,18 @@ class WheatherService : Service() {
    }
     fun getLocation(){
         MyLog.d(this,"============mLocation getLocation")
-        startLocation()
+        if(ContextCompat.checkSelfPermission(mContext,android.Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+           // ActivityCompat.requestPermissions(getApplication() as Activity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            MyLog.d(this,"============requestPermissions")
+        }
+        else{
+            startLocation()
+        }
+
     }
     fun startLocation(){
         MyLog.d(this,"============mLocation startLocation")
+
         mBaiduService = (application as WheatherApplication).mLocationServices
         mBaiduService.registerListener(mLocationListener)
         mBaiduService.setLocationOption(mBaiduService.defaultLocationClientOption)
@@ -214,6 +237,16 @@ class WheatherService : Service() {
             MyLog.d(this,"============mLocation updateWheather")
             stopLocation()
             MyLog.d(this,"============mLocation onReceiveLocation  end")
+        }
+
+        override fun onLocDiagnosticMessage(p0: Int, p1: Int, p2: String?) {
+            super.onLocDiagnosticMessage(p0, p1, p2)
+            MyLog.d(this,"============mLocation onLocDiagnosticMessage")
+        }
+
+        override fun onConnectHotSpotMessage(p0: String?, p1: Int) {
+            super.onConnectHotSpotMessage(p0, p1)
+            MyLog.d(this,"============mLocation onConnectHotSpotMessage")
         }
     }
     @Subscribe

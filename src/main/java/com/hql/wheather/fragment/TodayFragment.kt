@@ -1,13 +1,12 @@
 package com.hql.wheather.fragment
 
-import android.app.ActionBar
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import android.widget.Switch
 import android.widget.TextView
 import com.hql.wheather.R
 import com.hql.wheather.beans.ActionBean
@@ -16,9 +15,6 @@ import com.hql.wheather.services.WheatherService
 import com.hql.wheather.utils.MyLog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import android.view.animation.AnimationUtils.loadAnimation
-import android.view.animation.LinearInterpolator
 
 
 /**
@@ -40,6 +36,7 @@ lateinit var mLocation :TextView
     lateinit var mTem10:ImageView
     lateinit var mTem1:ImageView
     lateinit var mTypePic:ImageView
+    lateinit var mSwipeRefreshLayout:SwipeRefreshLayout
     override fun getLayoutID(): Int {
         return R.layout.fragment_today
     }
@@ -79,6 +76,14 @@ lateinit var mLocation :TextView
             var bean:ActionBean = ActionBean()
             bean.action = 0
            EventBus.getDefault().post(bean)
+            startAnimation()
+        }
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe)
+        mSwipeRefreshLayout.setOnRefreshListener {
+            MyLog.d(this,"============setOnRefreshListener")
+            var bean:ActionBean = ActionBean()
+            bean.action = 0
+            EventBus.getDefault().post(bean)
             startAnimation()
         }
 
@@ -173,6 +178,18 @@ lateinit var mLocation :TextView
         if(isAnimation){
             mFreash.clearAnimation()
             isAnimation = false
+
+            if (mSwipeRefreshLayout.isRefreshing){
+                mSwipeRefreshLayout.setRefreshing(false)
+            }
+        }
+    }
+    @Subscribe
+    public fun onEventMainThread(bean:ActionBean){
+        MyLog.d(this,"============mLocation onEventMainThread:"+bean.action)
+
+        when(bean.action){
+            1->stopAnimation()
         }
     }
 }
